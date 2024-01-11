@@ -1,0 +1,23 @@
+image: node:latest
+
+cache:
+  paths:
+    - node_modules/
+    - dist/
+
+stages:
+  - install_master
+
+install master dependency:
+  stage: install_master
+  only:
+    - master
+  script:
+    - docker stop weather || true
+    - docker rm weather || true
+    - docker rmi weather || true
+
+    - docker build -t weather .
+    - docker run -e BRANCH=master -e PORT=1234 --restart always --name weather -i -t -d -p 1234:1234 weather
+  tags:
+    - master
